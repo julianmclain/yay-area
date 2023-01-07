@@ -194,7 +194,12 @@ def get_team_differentials(players: List[PlayerAnalysis]) -> Dict[TeamName, int]
     return team_differentials
 
 
-def render_html(teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], draft_picks: List[DraftPick], team_differentials: Dict[TeamName, int]) -> str:
+def render_and_write_html(draft_picks: List[DraftPick], teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], team_differentials: Dict[TeamName, int]) -> None:
+    html = _render_html(teams, players, draft_picks, team_differentials)
+    _write_html(html)
+
+
+def _render_html(teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], draft_picks: List[DraftPick], team_differentials: Dict[TeamName, int]) -> str:
     environment = Environment(loader=FileSystemLoader('./'))
     template = environment.get_template(TEMPLATE_FILENAME)
     content = template.render(
@@ -206,14 +211,9 @@ def render_html(teams: Dict[TeamName, List[PlayerAnalysis]], players: List[Playe
     return content
 
 
-def write_html(html: str) -> None:
+def _write_html(html: str) -> None:
     with open(HTML_FILENAME, 'w') as f:
         f.write(html)
-
-
-def render_and_write_html(draft_picks: List[DraftPick], teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], team_differentials: Dict[TeamName, int]) -> None:
-    html = render_html(teams, players, draft_picks, team_differentials)
-    write_html(html)
 
  
 if __name__ == '__main__':
