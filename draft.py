@@ -260,5 +260,4 @@ if __name__ == "__main__":
     players = get_player_analysis(draft_picks, yahoo_player_data)
     teams = get_players_by_team(players)
     team_differentials = get_team_differentials(players)
-    print(team_differentials)
     render_and_write_html(draft_picks, teams, players, team_differentials)
