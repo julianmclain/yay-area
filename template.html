@@ -17,10 +17,10 @@
         </tr>
       </thead>
       <tbody>
-        {% for team in team_differentials %}
+        {% for team, diff in team_differentials %}
         <tr>
           <th scope="row">{{ team }}</th>
-          <td>{{ team_differentials[team] }}</td>
+          <td>{{ diff }}</td>
         </tr>
         {% endfor %}
       </tbody>

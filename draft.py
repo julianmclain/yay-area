@@ -1,7 +1,7 @@
 import os
 import csv
 import json
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from pathlib import Path
 from dataclasses import dataclass
 from collections import defaultdict
@@ -211,13 +211,13 @@ def get_players_by_team(
     return teams
 
 
-def get_team_differentials(players: List[PlayerAnalysis]) -> Dict[TeamName, int]:
+def get_team_differentials(players: List[PlayerAnalysis]) -> List[Tuple[TeamName, int]]:
     team_differentials = defaultdict(lambda: 0)
 
     for player in players:
         team_differentials[player.team_name] += player.differential
 
-    return team_differentials
+    return sorted(team_differentials.items(), key=lambda pair: pair[1], reverse=True)
 
 
 def render_and_write_html(
@@ -260,4 +260,5 @@ if __name__ == "__main__":
     players = get_player_analysis(draft_picks, yahoo_player_data)
     teams = get_players_by_team(players)
     team_differentials = get_team_differentials(players)
+    print(team_differentials)
     render_and_write_html(draft_picks, teams, players, team_differentials)
