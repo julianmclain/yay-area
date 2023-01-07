@@ -72,7 +72,7 @@ def read_draft(filename: str) -> List[DraftPick]:
     with open(filename, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            pick = DraftPick(row['Player ID'], row['Team Name'], row['First Name'], row['Last Name'], row['Pick'])
+            pick = DraftPick(row['Player ID'], row['Team Name'], row['First Name'], row['Last Name'], int(row['Pick']))
             draft.append(pick)
     
     return draft 
@@ -139,7 +139,7 @@ def read_yahoo_data(filename: str) -> Dict[PlayerId, YahooPlayerData]:
 def get_player_analysis(draft_picks: List[DraftPick], player_data: Dict[PlayerId, YahooPlayerData]) -> List[PlayerAnalysis]:
     player_analysis_list = []
     curr_draft_player_position_ranks = defaultdict(lambda: 1)
-    player_season_points_ranks = get_player_position_season_point_ranks(player_data)
+    player_season_points_ranks = _get_player_position_season_point_ranks(player_data)
 
     for pick in draft_picks:
         # Get draft position rank
@@ -155,7 +155,7 @@ def get_player_analysis(draft_picks: List[DraftPick], player_data: Dict[PlayerId
     return player_analysis_list 
 
 
-def get_player_position_season_point_ranks(player_data: Dict[PlayerId, YahooPlayerData]) -> Dict[PlayerId, int]:
+def _get_player_position_season_point_ranks(player_data: Dict[PlayerId, YahooPlayerData]) -> Dict[PlayerId, int]:
     player_position_ranks = {}
     curr_position_ranks = {
         'QB': 1,
@@ -174,31 +174,34 @@ def get_player_position_season_point_ranks(player_data: Dict[PlayerId, YahooPlay
     return player_position_ranks
 
 
-def get_team_differential(player_analysis: List[PlayerAnalysis]) -> Dict[TeamName, int]:
+def get_players_by_team(players: List[PlayerAnalysis]) -> Dict[TeamName, List[PlayerAnalysis]]:
+    teams = defaultdict(list)
+    for player in players:
+        teams[player.team_name].append(player)
+
+    for team in teams:
+        teams[team].sort(key=lambda player: player.overall_pick)
+
+    return teams
+
+
+def get_team_differentials(players: List[PlayerAnalysis]) -> Dict[TeamName, int]:
     team_differentials = defaultdict(lambda: 0)
 
-    for player in player_analysis:
+    for player in players:
         team_differentials[player.team_name] += player.differential
 
     return team_differentials
 
 
-def render_html(player_analysis: List[PlayerAnalysis], draft_picks: List[DraftPick], team_differentials: Dict[TeamName, int]) -> str:
+def render_html(teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], draft_picks: List[DraftPick], team_differentials: Dict[TeamName, int]) -> str:
     environment = Environment(loader=FileSystemLoader('./'))
     template = environment.get_template(TEMPLATE_FILENAME)
-    max_score = 100
-    test_name = "Python Challenge"
-    students = [
-        {"name": "Sandrine",  "score": 100},
-        {"name": "Gergeley", "score": 87},
-        {"name": "Frieda", "score": 92},
-        {"name": "Fritz", "score": 40},
-        {"name": "Sirius", "score": 75},
-    ]
     content = template.render(
-        students=students,
-        max_score=max_score,
-        test_name=test_name
+        draft_picks=draft_picks,
+        players=players,
+        teams=teams,
+        team_differentials=team_differentials
     )
     return content
 
@@ -208,8 +211,8 @@ def write_html(html: str) -> None:
         f.write(html)
 
 
-def render_and_write_html(draft_picks: List[DraftPick], player_analysis: List[PlayerAnalysis], team_differentials: Dict[TeamName, int]) -> None:
-    html = render_html(player_analysis, draft_picks, team_differentials)
+def render_and_write_html(draft_picks: List[DraftPick], teams: Dict[TeamName, List[PlayerAnalysis]], players: List[PlayerAnalysis], team_differentials: Dict[TeamName, int]) -> None:
+    html = render_html(teams, players, draft_picks, team_differentials)
     write_html(html)
 
  
@@ -218,10 +221,14 @@ if __name__ == '__main__':
     # If running for the first time, uncomment the call to fetch_and_write_yahoo_data
     # fetch_and_write_yahoo_data(draft_picks)
     yahoo_player_data = read_yahoo_data(PLAYER_DATA_FILENAME)
-    player_analysis = get_player_analysis(draft_picks, yahoo_player_data)
-    team_differentials = get_team_differential(player_analysis)
+    players = get_player_analysis(draft_picks, yahoo_player_data)
+    teams = get_players_by_team(players)
+    team_differentials = get_team_differentials(players)
+
+    for team, players in teams.items():
+        print(f"{team}, {players}")
 
     # for id, diff in team_differentials.items():
     #     print(f"{id}, {diff}")
 
-    render_and_write_html(draft_picks, player_analysis, team_differentials)
+    render_and_write_html(draft_picks, teams, players, team_differentials)

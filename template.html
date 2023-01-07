@@ -1,20 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Yay Area Draft Analytsis 2022</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <title>Yay Area - 2022 Draft</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+  </head>
 
-<body>
-  <h1>{{ test_name }} Results</h1>
-  <ul>
-  {% for student in students %}
-    <li>
-      <em>{{ student.name }}:</em> {{ student.score }}/{{ max_score }}
-    </li>
-  {% endfor %}
-  </ul>
-</body>
+  <body>
+    <h1>Yay Area - 2022 Draft</h1>
+    {% for team in teams %}
+    <h2>{{ team }}</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Position</th>
+          <th scope="col">Overall Pick</th>
+          <th scope="col">Draft Position Rank</th>
+          <th scope="col">Season End Position Rank</th>
+          <th scope="col">Differential</th>
+          <th scope="col">Season Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for player in teams[team] %}
+        <tr>
+          <th scope="row">{{ player.id }}</th>
+          <td>{{ player.first_name }}</td>
+          <td>{{ player.last_name }}</td>
+          <td>{{ player.position }}</td>
+          <td>{{ player.overall_pick }}</td>
+          <td>{{ player.draft_position_rank }}</td>
+          <td>{{ player.season_end_position_rank }}</td>
+          <td>{{ player.differential }}</td>
+          <td>{{ player.season_points }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  </body>
 </html>
