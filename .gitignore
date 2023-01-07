@@ -1,4 +1,7 @@
-.ammonite/
 .metals/
 .vscode/
-.scalafmt.conf
+venv/
+private.json
+.env
+token.json
+player-stats-2022-old.json
