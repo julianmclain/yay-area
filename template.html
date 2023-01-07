@@ -9,12 +9,31 @@
 
   <body>
     <h1>Yay Area - 2022 Draft</h1>
-    {% for team in teams %}
-    <h2>{{ team }}</h2>
+
+    <h2>Team Differentials</h2>
     <table class="table">
       <thead>
         <tr>
-          <th scope="col">id</th>
+          <th scope="col">Team Name</th>
+          <th scope="col">Differential</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for team in team_differentials %}
+        <tr>
+          <th scope="row">{{ team }}</th>
+          <td>{{ team_differentials[team] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% for team in teams %}
+    <h2>{{ team }}</h2>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Player Id</th>
           <th scope="col">First Name</th>
           <th scope="col">Last Name</th>
           <th scope="col">Position</th>
@@ -41,6 +60,7 @@
         {% endfor %}
       </tbody>
     </table>
+    <p>Team differential: {{team_differentials[team] }}</p>
     {% endfor %}
   </body>
 </html>
